@@ -21,11 +21,8 @@ getprop menu_Target [tObject]
    put _ModuleObject (tObject) into vObject
    if exists (vObject) is false then return empty
    --
-   put the displayed_Data of vObject into vData
-   put vData into LocalArray ["displayed_Data"]
-   --
-   put the module_ModelNames of vObject into modelNames
-   put modelNames into LocalArray ["module_ModelNames"]
+   put the displayed_Data of vObject into LocalArray ["displayed_Data"]
+   put the module_ModelNames of vObject into LocalArray ["module_ModelNames"]
    --
    return vObject
 end menu_Target
@@ -40,6 +37,14 @@ private function _ModuleObject tObject
    end if
    return vObject
 end _ModuleObject
+
+getprop importData_Param [vObject]
+   put LocalArray ["displayed_Data"]["modelName"] into modelName
+   if modelName is empty then
+      put the view_ModelName of vObject into modelName
+   end if
+   return modelName
+end importData_Param
 
 getprop importData_Params [vObject]
    return LocalArray ["module_ModelNames"]
@@ -68,23 +73,19 @@ end disabled_DeleteModelData
 
 --> Global | Module | Model | Menu
 -
-on menu_DisplayModelData vObject, modelName
-   display_ModuleModel vObject, modelName
-end menu_DisplayModelData
-
-on menu_ExportData vObject
-   -- ix_ExportModel vObject
-   --
-   ask_ExportModuleData vObject, true
-end menu_ExportData
-
 on menu_ImportData vObject, modelName
-   put the module_Model [modelName] of vObject into sData
-   set the displayed_Data of vObject to sData
+   put the module_Model [modelName] of vObject into sTableData
+   --
+   set the displayed_Data [modelName] of vObject to sTableData
+   --
    if the shiftKey is "Down" then
       display_ModuleModel vObject, modelName
    end if
 end menu_ImportData
+
+on menu_ExportData vObject
+   ask_ExportModuleData vObject, true
+end menu_ExportData
 
 on menu_DeleteModelData vObject, modelName
    put the module_ModelFile [modelName] of vObject into mFile
@@ -96,10 +97,30 @@ end menu_DeleteModelData
 private on _
 end _
 
+on menu_RevealDataFolder vObject
+   put the module_ModelFolder of vObject into moduleModelFolder
+   finder_Reveal moduleModelFolder
+end menu_RevealDataFolder
+
+on menu_DisplayModelData vObject, modelName
+   display_ModuleModel vObject, modelName
+end menu_DisplayModelData
+
+private on __
+end __
+
+on menu_ShowDisplayedData vObject
+   put the displayed_Data of vObject into dArray
+   put the view_ModelName of vObject into modelName
+   --
+   display_Data dArray, modelName, "displayed_Data"
+end menu_ShowDisplayedData
+
 on menu_SaveData vObject
    dispatch "save_Data" to vObject
+   get the result
    --
-   put the displayed_Data [true] of vObject into testData
+   put the displayed_Data of vObject into testData
    display_Data testData, mName, "displayed_Data"
 end menu_SaveData
 

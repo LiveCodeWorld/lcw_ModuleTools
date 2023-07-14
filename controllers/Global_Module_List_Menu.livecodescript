@@ -31,7 +31,7 @@ getprop menu_CheckTarget [mTarget]
 end menu_CheckTarget
 
 getprop test_Param [displayView]
-  return "b"
+   return "b"
 end test_Param
 
 getprop test_Params [displayView]
@@ -43,19 +43,26 @@ getprop checked_TestChecked
 end checked_TestChecked
 
 getprop disabled_Test
-  return false -- true, "delete"
+   return false -- true, "delete"
 end disabled_Test
 
 
 --> Global | Module | List | Menu
 -
-on menu_Test displayView, abc
-   put displayView & CR & abc
-end menu_Test
+on menu_DisplayModuleArray displayView
+   display_ModuleArray
+   /*
+   put env_GetShortModuleArray() into moduleArray
+   -- set the displayed_Data of displayView to moduleArray
+   display_Data moduleArray
+   */
+end menu_DisplayModuleArray
 
-on menu_TestChecked
-  put menu_GetChecked (the params)
-end menu_TestChecked
+on menu_DisplayShortModuleFolders displayView
+   put env_ListShortModuleFolders() into moduleNames
+   --
+   set the displayed_Data of displayView to moduleNames
+end menu_DisplayShortModuleFolders
 
 on _
 end _
@@ -70,7 +77,3 @@ end submenu_Dev
 on menu_Experiment displayView
    put displayView
 end menu_Experiment
-
-
---> Deps
--
