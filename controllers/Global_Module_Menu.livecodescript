@@ -105,8 +105,8 @@ on menu_EditModuleMenu displayView
    menu_Edit "Global | Module | Tree | Menu"
 end menu_EditModuleMenu
 
-private on __
-end __
+private on _
+end _
 
 on menu_EditModuleBehavior
    put _GetModuleBehaviorName() into bStackName
@@ -147,86 +147,17 @@ on menu_RemoveFromMemory displayView
    module_RemoveFromMemory moduleName, projectFolder
 end menu_RemoveFromMemory
 
-private on _
-end _
-
-on _DisplayModuleTools
-   put LocalArray ["moduleStackName"] into moduleStackName
-   --
-   display_ModuleTools moduleStackName
-end _DisplayModuleTools
+private on __
+end __
 
 on submenu_Tools
    return "Global | Module | Tree | Menu"
 end submenu_Tools
 
-on _RemoveModuleMenu displayView
-   put _GetModuleMenuTitle() into gMenuTitle
-   lcw_Answer merge ("Are you sure you want to remove the default menu '[[gMenuTitle]]' for this module from the global database?"), gMenuTitle
-   --
-   menu_RemoveGlobalController gMenuTitle
-   put the result into mController
-   if exists (mController) then
-      get the script of mController
-      if gMenuTitle is among the lines of it then
-         edit the script of mController
-      end if
-   end if
-end _RemoveModuleMenu
+on submenu_CreateModule
+   return "Global | View | Card | Create | Menu"
+end submenu_CreateModule
 
-on _RevealModuleFolder
-   put LocalArray ["moduleStackName"] into moduleStackName
-   --
-   put the module_Folder of stack moduleStackName into moduleFolder
-   --
-   finder_Reveal moduleFolder
-end _RevealModuleFolder
-
-on _
-end _
-
-on _OpenModule
-   put LocalArray ["moduleStackName"] into moduleStackName
-   --
-   go to stack moduleStackName
-end _OpenModule
-
-on _CloseModuleStack
-   put LocalArray ["moduleStackName"] into moduleStackName
-   --
-   module_CloseStackAndTools moduleStackName
-end _CloseModuleStack
-
-on _
-end _
-
-on _EditModuleToolMenu
-   menu_Edit "Global | Module | Tree | Menu"
-   menu_Edit "Global | Module | Menu"
-end _EditModuleToolMenu
-
-on _SetModuleBehavior
-   put LocalArray ["moduleStackName"] into moduleStackName
-   --
-   put the module_Folder of stack moduleStackName into moduleFolder
-   put module_ConstructBehaviorPath (moduleStackName, moduleFolder) into bPath
-   --
-   if there is a stack bPath then
-      put LocalArray ["viewObject"] into viewObject
-      --
-      set the behavior of viewObject to the long id of stack bPath
-      put the behavior of viewObject into bObject
-      edit the script of bObject
-   end if
-end _SetModuleBehavior
-
-on _
-end _
-
-on _ResetMenus
-   put LocalArray ["viewObject"] into viewObject
-   put LocalArray ["displayView"] into displayView
-   --
-   put view_ConstructToolMenu (viewObject) into mTitles
-   set the title_Menu of displayView to mTitles
-end _ResetMenus
+on submenu_Dev
+   return menu_DevTitle ("Global | Module | Menu")
+end submenu_Dev

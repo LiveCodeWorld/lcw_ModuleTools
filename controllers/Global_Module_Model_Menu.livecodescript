@@ -124,6 +124,25 @@ on menu_SaveData vObject
    display_Data testData, mName, "displayed_Data"
 end menu_SaveData
 
-on menu_ClearData vObject
-   dispatch "clear_Data" to vObject
+private on ___
+end ___
+
+-- on menu_ClearData vObject
+dispatch "clear_Data" to vObject
 end menu_ClearData
+
+on menu_ClearShards ixView
+   -- put LocalArray ["displayed_Data"] into dData
+   put the displayed_Data of ixView into dData
+   put dData ["vData"] into vData
+   --
+   repeat with lineNum = 1 to item 2 of the extents of vData
+      put empty into dData ["vData"][lineNum]["Shards"]
+   end repeat
+   --
+   set the displayed_Data of ixView to dData
+end menu_ClearShards
+
+on menu_ClearIncome ixView
+   put the name of ixView
+end menu_ClearIncome

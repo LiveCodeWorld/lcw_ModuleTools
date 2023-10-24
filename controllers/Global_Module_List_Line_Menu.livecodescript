@@ -17,12 +17,43 @@ local LocalArray
 
 --> Menu | Props
 -
+private function _SelectedShortModuleFolder displayView
+   if the tree_View of displayView is empty then
+      put the selected_Line of displayView into shortModuleFolder
+   else
+      put the selected_Path of displayView into shortModuleFolder
+      replace comma with "_" in shortModuleFolder
+   end if
+   return shortModuleFolder
+end _SelectedShortModuleFolder
+
+private function _SelectedModuleStackPath displayView
+   if the tree_View of displayView is empty then
+      put the selected_Line of displayView into shortModuleFolder
+      put env_GetModuleHomePath (shortModuleFolder) into moduleStackPath
+   else
+      put the selected_Path of displayView into moduleName
+      replace comma with "|" in moduleName
+      put view_GetTemplateObject (moduleName) into viewObject
+      --
+      if exists (stack moduleName) then
+         put the filename of stack moduleName into moduleStackPath
+      else
+         breakpoint
+         exit to top
+      end if
+   end if
+   return moduleStackPath
+end _SelectedModuleStackPath
+
 getprop menu_Target [tObject]
-   put the display_View of tObject into LocalArray ["displayView"]
-   put the selected_Line of tObject into shortModuleFolder
+   put the display_View of tObject into displayView
+   put displayView into LocalArray ["displayView"]
    --
-   put env_GetModuleHomePath (shortModuleFolder) into moduleStackPath
+   put _SelectedShortModuleFolder (displayView) into shortModuleFolder
+   put _SelectedModuleStackPath (displayView) into moduleStackPath
    put the short name of stack moduleStackPath into LocalArray ["moduleName"]
+   --   
    put the project_Name of stack moduleStackPath into LocalArray ["projectName"]
    put the project_Folder of stack moduleStackPath into LocalArray ["projectFolder"]
    put the module_Folder of stack moduleStackPath into LocalArray ["moduleFolder"]
@@ -30,49 +61,12 @@ getprop menu_Target [tObject]
    return shortModuleFolder
 end menu_Target
 
-getprop moveModule_Param
-   return LocalArray ["projectName"]
-end moveModule_Param
-
-getprop moveModule_Params
-   return library_ListProjectNames()
-end moveModule_Params
-
 
 --> Global | Module | List | Line | Menu
 -
-on menu_DisplayModule shortModuleFolder
-   display_ModuleFromShortModuleFolder shortModuleFolder
-end menu_DisplayModule
-
-on menu_DisplayModuleTools shortModuleFolder
-   put LocalArray ["moduleName"] into moduleName
-   --
-   display_ModuleTools moduleName, true
-end menu_DisplayModuleTools
-
-on _
-end _
-
-on submenu_Dev
-   return "Dev | Menu"
-end submenu_Dev
-
-
---> Dev | Menu
--
-on menu_RenameModule shortModuleFolder
-   breakpoint
-   
-   put LocalArray ["moduleName"] into oldModuleName
-   put LocalArray ["projectName"] into projectName
-   --
-   put lcw_Ask ("Give this module a new name...", oldModuleName) into newModuleName
-   module_Rename oldModuleName, newModuleName, projectName
-   --
-   display_ProjectLibs projectName
-   display_ProjectModules projectName
-end menu_RenameModule
+/*
+See also "Global | Modules | Tree | Line | Menu"
+*/
 
 on menu_RevealModuleFolder shortModuleFolder
    put LocalArray ["moduleFolder"] into moduleFolder
@@ -85,42 +79,22 @@ on menu_RevealModuleFolder shortModuleFolder
    finder_Reveal moduleFolder
 end menu_RevealModuleFolder
 
-on menu_MoveModule moduleShortFolder, newProjectName
-   set the cursor to watch
-   put LocalArray ["moduleName"] into moduleName
-   put LocalArray ["projectName"] into oldProjectName
-   put LocalArray ["projectFolder"] into oldProjectFolder
-   put LocalArray ["moduleFolder"] into oldModuleFolder
-   --
-   put library_FetchProjectFolder (newProjectName) into newProjectFolder
-   put module_GetFolder (moduleShortFolder, newProjectFolder) into newModuleFolder
-   
-   breakpoint
-   
-   -- remove from memory
-   module_RemoveFromMemory moduleName, oldProjectFolder
-   
-   -- move folder
-   revMoveFolder oldModuleFolder, newModuleFolder
-   
-   if the shiftKey is "Up" then
-      -- re-index and re-load
-      project_ExportMenusAndStackFiles oldProjectFolder
-      project_ExportMenusAndStackFiles newProjectFolder
-   end if
-   
-   -- Refresh index views
-   display_ProjectModules oldProjectName
-   display_ProjectModules newProjectName   
-end menu_MoveModule
+private on _
+end _
 
-on menu_ShowModule shortModuleFolder
-   put env_GetModuleHomePath (shortModuleFolder) into moduleStackPath
-   -- 
-   toplevel stack moduleStackPath
-   show stack moduleStackPath
+on menu_DisplayModule shortModuleFolder
+   display_ModuleFromShortModuleFolder shortModuleFolder
+end menu_DisplayModule
+
+on menu_DisplayModuleTools shortModuleFolder
+   put LocalArray ["moduleName"] into moduleName
    --
-   put LocalArray ["displayView"] into displayView
-   put globalLoc (the loc of displayView) into gLoc
-   set the loc of stack moduleStackPath to gLoc
-end menu_ShowModule
+   display_ModuleTools moduleName, true
+end menu_DisplayModuleTools
+
+private on __
+end __
+
+on submenu_Dev
+   return menu_DevTitle()
+end submenu_Dev

@@ -14,15 +14,6 @@ local LocalArray
 
 --> Menu | Props
 -
--- getprop menu_CheckTarget [tObject]
-   if exists (stack moduleName) is true then
-      return true
-   else
-      -- breakpoint
-      return false
-   end if
-end menu_CheckTarget
-
 getprop menu_Target [tObject]
    put the array_View of tObject into displayView
    if exists (displayView) is false then return tObject
@@ -64,6 +55,7 @@ getprop moveModule_Param
 end moveModule_Param
 
 getprop moveModule_Params
+   return env_ListActiveProjects()
    return library_ListProjectNames()
 end moveModule_Params
 
@@ -84,6 +76,11 @@ end _refresh
 
 --> Global | Modules | Tree | Line | Menu
 -
+/*
+See also "Global | Module | List | Line | Menu"
+See also "Global | Modules | Tree | Line | Menu"
+*/
+
 on menu_DisplayModule moduleName
    put LocalArray ["moduleFolder"] into moduleFolder
    display_Module moduleFolder
