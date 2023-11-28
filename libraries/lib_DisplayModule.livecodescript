@@ -184,7 +184,7 @@ command display_ModuleFromShortModuleFolder shortModuleFolder
 end display_ModuleFromShortModuleFolder
 
 command display_Module moduleFolder
-   -- put project_ConstructHomeStackPath (moduleFolder) into moduleHomeStackPath
+   -- put project_PathFromFolder (moduleFolder) into moduleHomeStackPath
    put project_FirstStackPath (moduleFolder) into moduleHomeStackPath
    --
    go to stack moduleHomeStackPath
@@ -216,6 +216,11 @@ end display_ProjectModules
 
 --> Deps
 -
+function project_FirstStackPath projectFolder
+   get folder_ListStackPaths (projectFolder)
+   return line 1 of it
+end project_FirstStackPath
+
 function env_GetModuleFolder shortModuleFolder
    put env_GetModuleShortFolderArray (shortModuleFolder) into shortFolderArray
    return shortFolderArray ["moduleFolder"]

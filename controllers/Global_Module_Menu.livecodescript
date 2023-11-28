@@ -44,26 +44,6 @@ getprop disabled_EditModuleBehavior [viewObject]
    end if
 end disabled_EditModuleBehavior
 
--- getprop disabled_CreateModuleMenu [displayView]
-put _GetModuleMenuTitle() into gMenuTitle
-put menu_GetGlobalController (gMenuTitle) into mController
-if exists (mController) then
-   return true
-else
-   if exists (stack gMenuTitle) is true then
-      -- needs indexing so lets do that and save the array
-      set the menu_Update of stack gMenuTitle to true
-      put the result into projectArray
-      return true
-   else
-      -- could try and find from path
-      -- put LocalArray ["viewObject"] into viewObject
-      -- put the module_Folder of viewObject into moduleFolder
-      return false
-   end if
-end if
-end disabled_CreateModuleMenu
-
 private function _GetModuleBehaviorName
    put LocalArray ["moduleStackName"] into moduleStackName
    put project_DefaultBehaviorName (moduleStackName) into bStackName
@@ -76,9 +56,29 @@ private function _GetModuleMenuTitle
    return gMenuTitle
 end _GetModuleMenuTitle
 
+private function _GetModuleFolder
+   put LocalArray ["moduleStackName"] into moduleName
+   put the stack_Folder of stack moduleName into moduleFolder
+   return moduleFolder
+end _GetModuleFolder
+
 
 --> Global | Module | Menu
 -
+on menu_ExportModuleJson displayView
+   put _GetModuleFolder() into moduleFolder
+   if there is not a folder moduleFolder then
+      breakpoint
+      exit to top
+   end if
+   
+   project_ExportMenusAndStackFiles moduleFolder
+   put the result into projectArray
+   --
+   put _GetStackName (displayView) into moduleName
+   display_Data projectArray, moduleName, "Module Array"  
+end menu_ExportModuleJson
+
 on menu_CreateModuleMenu displayView
    put LocalArray ["moduleStackName"] into moduleStackName
    --
