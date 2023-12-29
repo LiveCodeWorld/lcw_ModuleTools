@@ -65,6 +65,53 @@ end _GetModuleFolder
 
 --> Global | Module | Menu
 -
+on menu_DisplayCreateScript
+   put LocalArray ["viewObject"] into viewObject
+   put the view_Name of viewObject into vName
+   --
+   put the view_CreateScript of viewObject into viewCreateScript
+   display_Text viewCreateScript, vName, "Create Script"
+   put the result into dView
+   --
+   display_SetMenu dView, "Global | Widget | Script | Menu"
+   return dView
+end menu_DisplayCreateScript
+
+on menu_CreateWidgetStack dView
+   put LocalArray ["viewObject"] into viewObject
+   put the view_Name of viewObject into vName
+   put scriptwidget_ConstructName (vName) into wName
+   --
+   put lcw_Ask ("Choose a name for this widget..", wName, "Create Widget", dView) into wName
+   if exists (stack wName) then
+      lcw_AnswerWarning "Stack '[wName]' already exists!", dView, wName
+   end if
+   --
+   put the behavior of viewObject into bObject
+   put the script of bObject into bScript
+   put the view_CreateScript of viewObject into viewCreateScript
+   put word 1 to -1 of bScript & CR&CR & viewCreateScript into wScript
+   --
+   create script only stack wName
+   set the script of stack wName to wScript
+   --
+   edit the script of stack wName
+end menu_CreateWidgetStack
+
+on menu_TestScriptOnlyWidget cardObject
+   put LocalArray ["viewObject"] into viewObject
+   put the view_Name of viewObject into vName
+   put scriptwidget_ConstructName (vName) into wName
+   --
+   put lcw_Ask ("Choose a name for this widget..", wName, "Create Widget", cardObject) into wName
+   --
+   create stack
+   create widget as wName
+end menu_TestScriptOnlyWidget
+
+private on ___
+end ___
+
 on menu_ExportModuleJson displayView
    put _GetModuleFolder() into moduleFolder
    if there is not a folder moduleFolder then

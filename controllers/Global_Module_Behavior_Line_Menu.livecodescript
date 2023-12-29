@@ -23,15 +23,15 @@ getprop menu_Target [tObject]
 end menu_Target
 
 -- getprop menu_CheckTarget [dView]
-   if exists (dView) is false then return true
-   --
-   put item 2 of the selected_Path of dView into shortFile
-   if shortFile is not empty then
-      --  if exists (stack bStackName) then
-      return true
-   else
-      return false
-   end if
+if exists (dView) is false then return true
+--
+put item 2 of the selected_Path of dView into shortFile
+if shortFile is not empty then
+   --  if exists (stack bStackName) then
+   return true
+else
+   return false
+end if
 end menu_CheckTarget
 
 private function _GetShortFile dView
@@ -113,8 +113,8 @@ on menu_RenameBehavior dView
    put _GetModuleStackName (dView) into moduleStackName
    put project_DefaultBehaviorName (moduleStackName) into newBehaviorName
    --
-   put "Do you want to rename the current behavior '[[oName]]' to the default name '[[newBehaviorName]]'?" into someQuestion
-   lcw_Answer someQuestion, dView, oName, newBehaviorName
+   put merge ("Do you want to rename the current behavior '[[oName]]'?") into someQuestion
+   put lcw_Ask (someQuestion, newBehaviorName, pTitle, dView) into newBehaviorName
    --
    module_MoveRenameBehavior stackPath, newBehaviorName
    put the result into newBehaviorPath
@@ -194,5 +194,3 @@ on _RenameBehavior dView
    --
    edit the script of stack newBehaviorName
 end _RenameBehavior
-
-
