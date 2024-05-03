@@ -112,6 +112,11 @@ end menu_TestScriptOnlyWidget
 private on ___
 end ___
 
+on menu_SaveModule dView
+   put LocalArray ["viewObject"] into viewObject
+   put the stack_Name of viewObject
+end menu_SaveModule
+
 on menu_ExportModuleJson displayView
    put _GetModuleFolder() into moduleFolder
    if there is not a folder moduleFolder then
