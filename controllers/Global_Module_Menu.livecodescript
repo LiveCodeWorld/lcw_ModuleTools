@@ -127,8 +127,8 @@ on menu_ExportModuleJson displayView
    project_ExportMenusAndStackFiles moduleFolder
    put the result into projectArray
    --
-   put _GetStackName (displayView) into moduleName
-   display_Data projectArray, moduleName, "Module Array"  
+   -- put _GetStackName (displayView) into moduleName
+   -- display_Data projectArray, moduleName, "Module Array"  
 end menu_ExportModuleJson
 
 on menu_CreateModuleMenu displayView

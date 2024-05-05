@@ -155,14 +155,7 @@ end __
 
 on menu_RememberModuleStacks viewObject
    set the cursor to watch
-   --
-   put the module_Name of viewObject into shortModuleFolder
-   put the view_Name of viewObject into moduleStackName
-   if exists (stack moduleStackName) is false then
-      put LocalArray ["displayView"] into displayView
-      lcw_AnswerWarning "Cannot local module stack '[[moduleStackName]]!", displayView, moduleStackName
-   end if
-   put the module_Folder of viewObject into moduleFolder
+   _SetModuleInfo shortModuleFolder, moduleFolder, moduleStackName, viewObject
    
    # Set module stackfiles
    put the folder_StackFileArray of viewObject into stackFileArray
@@ -173,9 +166,27 @@ on menu_RememberModuleStacks viewObject
    put the result into moduleArray
    
    # Check
-   put project_FetchArray (moduleFolder) into moduleArray
+   put project_GetArrayFromFolder (moduleFolder) into moduleArray
    display_Data moduleArray, moduleStackName, "Module Array"  
 end menu_RememberModuleStacks
+
+private command _SetModuleInfo @shortModuleFolder, @moduleFolder, @moduleStackName, viewObject
+   put the module_Name of viewObject into shortModuleFolder
+   put the view_Name of viewObject into moduleStackName
+   if exists (stack moduleStackName) is false then
+      put LocalArray ["displayView"] into displayView
+      lcw_AnswerWarning "Cannot local module stack '[[moduleStackName]]!", displayView, moduleStackName
+   end if
+   put the module_Folder of viewObject into moduleFolder
+end _SetModuleInfo
+
+on menu_DisplayModuleMenus viewObject
+   set the cursor to watch
+   _SetModuleInfo shortModuleFolder, moduleFolder, moduleStackName, viewObject
+   
+   put project_GetArrayFromFolder (moduleFolder) into moduleArray
+   display_Data moduleArray, moduleStackName, "Module Array"  
+end menu_DisplayModuleMenus
 
 on menu_RememberProjectStacks viewObject
    put the project_Name of viewObject into projectName
@@ -183,10 +194,12 @@ on menu_RememberProjectStacks viewObject
    if there is not a folder projectFolder then
       lcw_AnswerWarning "Cannot find a project folder for project:" && projectName
    end if
-   --
-   project_ExportMenusAndStackFiles projectFolder
-   put the result into projectArray
-   --
+   
+   # Construct and Store projectArray
+   put project_ConstructArrayFromFolder (projectFolder) into projectArray
+   project_StoreArray projectFolder, projectArray
+   
+   # Display
    display_ProjectLibs projectName
    display_GitRefreshProjectName projectName
 end menu_RememberProjectStacks
