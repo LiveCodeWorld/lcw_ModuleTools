@@ -285,10 +285,7 @@ on _CreateStandAlone viewObject
    put the long id of cd 1 of clonedStack into clonedTemplateCard
    put the long id of control 1 of clonedTemplateCard into clonedView
    
-   -- put the module_Behaviors of viewObject into bObjects
    set the imported_ViewBehaviors of clonedView to true
-   
-   -- set the behavior of clonedTemplateCard to empty
-   
+      
    display_ViewBehaviors clonedView, empty, clonedStack
 end _CreateStandAlone
