@@ -42,6 +42,10 @@ on menu_EditScript displayView
    edit the script of stack cPath
 end menu_EditScript
 
+on menu_NewModuleController
+   breakpoint
+end menu_NewModuleController
+
 on menu_FixMenuName displayView
    put _GetControllerPath (displayView) into cPath
    put the name of stack cPath into mController
