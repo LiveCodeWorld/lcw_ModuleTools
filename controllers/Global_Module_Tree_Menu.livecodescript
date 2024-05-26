@@ -111,6 +111,18 @@ getprop disabled_DeselectModule
    end if
 end disabled_DeselectModule
 
+getprop disabled_SetViewCardBehavior [viewObject]
+   if exists (stack "behavior_ViewTemplateCard") is false then return true
+   --
+   put the card_Object of viewObject into templateCardObject
+   put the behavior of templateCardObject into bObject
+   if exists (bObject) is false then return false
+   
+   put the name of stack "behavior_ViewTemplateCard" into defaultBehaviorStack
+   put the name of bObject = defaultBehaviorStack into behaviorIsSet
+   return behaviorIsSet
+end disabled_SetViewCardBehavior
+
 
 --> Global | Module | Tree | Menu
 -
@@ -216,6 +228,16 @@ on menu_Refresh viewObject
    put the view_Name of viewObject into moduleStackName
    display_ModuleTools moduleStackName
 end menu_Refresh
+
+on menu_SetViewCardBehavior viewObject
+   lcw_Answer "Set the behavior of the views card to the stack 'behavior_ViewTemplateCard'?"
+   put the card_Object of viewObject into cardObject
+   set the behavior of cardObject to the long id of stack "behavior_ViewTemplateCard"
+end menu_SetViewCardBehavior
+
+on submenu_Dev
+   return menu_DevTitle ("Global | Module | Tree | Menu")
+end submenu_Dev
 
 on _SelectModule viewObject
    select viewObject
