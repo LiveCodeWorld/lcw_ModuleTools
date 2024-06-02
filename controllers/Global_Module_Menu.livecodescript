@@ -26,7 +26,15 @@ getprop menu_Target [tObject]
    return displayView
 end menu_Target
 
-getprop disabled_EditMenu [viewObject]
+getprop menu_CheckTarget [mTarget]
+   if exists (mTarget) then
+      return true
+   else
+      return false
+   end if
+end menu_CheckTarget
+
+-- getprop disabled_EditMenu [viewObject]
    put _GetModuleMenuTitle() into gMenuTitle
    if menu_Exists (gMenuTitle) then
       return false
@@ -35,7 +43,7 @@ getprop disabled_EditMenu [viewObject]
    end if
 end disabled_EditMenu
 
-getprop disabled_EditModuleBehavior [viewObject]
+-- getprop disabled_EditModuleBehavior [viewObject]
    put _GetModuleBehaviorName() into bStackName
    if exists (stack bStackName) then
       return false
@@ -65,6 +73,46 @@ end _GetModuleFolder
 
 --> Global | Module | Menu
 -
+on menu_SaveModule dView
+   put LocalArray ["viewObject"] into viewObject
+   put the stack_Name of viewObject into sName
+   --
+   lcw_Answer "Save stack '[[var]]'?", viewObject, sName
+end menu_SaveModule
+
+private on _
+end _
+
+on menu_ModuleProperties
+   put LocalArray ["viewObject"] into viewObject
+   --
+   display_ObjectProperties viewObject
+end menu_ModuleProperties
+
+on menu_ModuleStackProperties
+   put LocalArray ["viewObject"] into viewObject
+   put the stack_Object of viewObject into stackObject
+   --
+   display_ObjectProperties stackObject
+end menu_ModuleStackProperties
+
+on menu_RefreshMenubar
+   put LocalArray ["viewObject"] into viewObject
+   put the stack_Name of viewObject into stackName
+   
+   # Need to reset the menubar to have it update
+   put the defaultMenuBar into tOriginalDefaultMenuBar
+   
+   set the menuBar of stack stackName to empty
+   set the defaultMenuBar to ide_DefaultMenuGroup()
+   --
+   -- set the menuBar of this stack to tOriginalMenuBar
+   -- set the defaultMenuBar to tOriginalDefaultMenuBar
+end menu_RefreshMenubar
+
+private on __
+end __
+
 on menu_DisplayCreateScript
    put LocalArray ["viewObject"] into viewObject
    put the view_Name of viewObject into vName
@@ -111,11 +159,6 @@ end menu_TestScriptOnlyWidget
 
 private on ___
 end ___
-
-on menu_SaveModule dView
-   put LocalArray ["viewObject"] into viewObject
-   put the stack_Name of viewObject
-end menu_SaveModule
 
 on menu_ExportModuleJson displayView
    put _GetModuleFolder() into moduleFolder

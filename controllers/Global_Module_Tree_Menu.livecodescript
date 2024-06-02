@@ -12,32 +12,37 @@ version: 0.2
 -
 local LocalArray
 
+getprop menu_CheckTarget
+   return true
+end menu_CheckTarget
+
 getprop menu_Target [tObject]
    put the display_View of tObject into displayView
-   put the displayed_Object of displayView into viewObject
-   --
-   put the displayed_ModuleName of displayView into moduleName
-   put the title_Text of displayView into moduleName
-   
-   # Some Tests
-   if there is not a stack moduleName then return empty
-   if exists (control 1 of cd 1 of stack moduleName) is false then return empty
-   put the long id of control 1 of cd 1 of stack moduleName into testViewObject
-   if testViewObject is not viewObject then
-      breakpoint
-      return empty
+   if exists (displayView) then
+      put the displayed_Object of displayView into viewObject
+      put displayView into LocalArray ["displayView"]
+   else
+      put the module_ViewObject of tObject into viewObject
+      if exists (viewObject) is fale then return tObject
+      
    end if
-   --
-   put the displayed_ModuleFolder of displayView into moduleFolder
-   put _GetClonedStackNames (viewObject) into clonedStackNames
-   put clonedStackNames into LocalArray ["clonedStackNames"]
-   --
-   put moduleName into LocalArray ["moduleName"]
-   put moduleFolder into LocalArray ["moduleFolder"]
-   put displayView into LocalArray ["displayView"]
    --
    return viewObject
 end menu_Target
+
+getprop menu_CheckTarget [viewObject]
+   if exists (viewObject) is false then return false
+   
+   put the stack_Name of viewObject into moduleName
+   put the module_Folder of viewObject into moduleFolder
+   put _GetClonedStackNames (viewObject) into clonedStackNames
+   --
+   put clonedStackNames into LocalArray ["clonedStackNames"]
+   put moduleName into LocalArray ["moduleName"]
+   put moduleFolder into LocalArray ["moduleFolder"]
+   --
+   return true
+end menu_CheckTarget
 
 getprop disabled_CloseModuleStack
    if LocalArray ["clonedStackNames"] is empty then
