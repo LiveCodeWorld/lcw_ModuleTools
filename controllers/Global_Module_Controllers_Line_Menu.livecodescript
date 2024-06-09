@@ -34,6 +34,7 @@ function _GetControllerPath displayView
    return stackPath
 end _GetControllerPath
 
+
 --> Global | Module | Controllers | Line | Menu
 -
 on menu_EditScript displayView
@@ -42,8 +43,12 @@ on menu_EditScript displayView
    edit the script of stack cPath
 end menu_EditScript
 
-on menu_NewModuleController
+on menu_NewModuleController dView
+   put the title_Text of dView into moduleStackName
    breakpoint
+   ask_CreateModuleMenu moduleStackName, dView
+   --
+   display_ModuleTools moduleStackName
 end menu_NewModuleController
 
 on menu_FixMenuName displayView
@@ -54,20 +59,11 @@ on menu_FixMenuName displayView
    put the result into newStackName
 end menu_FixMenuName
 
-on _
+private on _
 end _
 
-on submenu_Dev
-   return "Dev | Menu"
-end submenu_Dev
-
-
---> Dev | Menu
--
-on menu_Experiment displayView
-   put displayView
-end menu_Experiment
-
-
---> Deps
--
+on menu_Refresh dView
+   put the title_Text of dView into moduleStackName
+   display_ModuleTools moduleStackName
+end menu_Refresh
+   

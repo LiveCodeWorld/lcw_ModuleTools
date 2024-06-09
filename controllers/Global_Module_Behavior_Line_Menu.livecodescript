@@ -85,6 +85,13 @@ on menu_EditStackScript dView
 end menu_EditStackScript
 
 on menu_NewBehavior dView
+   put the title_Text of dView into moduleStackName
+   ask_CreateModuleBehavior moduleStackName, dView
+   put the result into newBehaviorStackPath
+   --
+   menu_Refresh dView
+   
+   /*   
    put lcw_Ask ("What name do you want to give this new behavior?", "behavior_New") into newBehaviorName
    if there is a stack newBehaviorName then
       lcw_AnswerWarning "A stack named '[[newBehaviorName]]' already exists!", dView, newBehaviorName
@@ -104,6 +111,7 @@ on menu_NewBehavior dView
    put the result into newBehaviorStackPath
    --
    menu_Refresh dView
+   */
 end menu_NewBehavior
 
 on menu_RenameBehavior dView

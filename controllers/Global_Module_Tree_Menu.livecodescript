@@ -188,7 +188,8 @@ on menu_RememberModuleStacks viewObject
 end menu_RememberModuleStacks
 
 private command _SetModuleInfo @shortModuleFolder, @moduleFolder, @moduleStackName, viewObject
-   put the module_Name of viewObject into shortModuleFolder
+   breakpoint
+   put the module_ShortFolder of viewObject into shortModuleFolder
    put the view_Name of viewObject into moduleStackName
    if exists (stack moduleStackName) is false then
       put LocalArray ["displayView"] into displayView
