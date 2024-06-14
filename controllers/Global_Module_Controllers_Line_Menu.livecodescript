@@ -45,7 +45,7 @@ end menu_EditScript
 
 on menu_NewModuleController dView
    put the title_Text of dView into moduleStackName
-   breakpoint
+   --
    ask_CreateModuleMenu moduleStackName, dView
    --
    display_ModuleTools moduleStackName

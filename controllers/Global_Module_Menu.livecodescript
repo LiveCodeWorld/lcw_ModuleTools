@@ -78,6 +78,8 @@ on menu_SaveModule dView
    put the stack_Name of viewObject into sName
    --
    lcw_Answer "Save stack '[[var]]'?", viewObject, sName
+   --
+   stack_Save viewObject, false, false
 end menu_SaveModule
 
 private on _

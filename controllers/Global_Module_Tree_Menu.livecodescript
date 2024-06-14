@@ -128,6 +128,16 @@ getprop disabled_SetViewCardBehavior [viewObject]
    return behaviorIsSet
 end disabled_SetViewCardBehavior
 
+private command _SetModuleInfo @shortModuleFolder, @moduleFolder, @moduleStackName, viewObject
+   put the module_ShortFolder of viewObject into shortModuleFolder
+   put the view_Name of viewObject into moduleStackName
+   if exists (stack moduleStackName) is false then
+      put LocalArray ["displayView"] into displayView
+      lcw_AnswerWarning "Cannot local module stack '[[moduleStackName]]!", displayView, moduleStackName
+   end if
+   put the module_Folder of viewObject into moduleFolder
+end _SetModuleInfo
+
 
 --> Global | Module | Tree | Menu
 -
@@ -187,17 +197,6 @@ on menu_RememberModuleStacks viewObject
    display_Data moduleArray, moduleStackName, "Module Array"  
 end menu_RememberModuleStacks
 
-private command _SetModuleInfo @shortModuleFolder, @moduleFolder, @moduleStackName, viewObject
-   breakpoint
-   put the module_ShortFolder of viewObject into shortModuleFolder
-   put the view_Name of viewObject into moduleStackName
-   if exists (stack moduleStackName) is false then
-      put LocalArray ["displayView"] into displayView
-      lcw_AnswerWarning "Cannot local module stack '[[moduleStackName]]!", displayView, moduleStackName
-   end if
-   put the module_Folder of viewObject into moduleFolder
-end _SetModuleInfo
-
 on menu_DisplayModuleMenus viewObject
    set the cursor to watch
    _SetModuleInfo shortModuleFolder, moduleFolder, moduleStackName, viewObject
@@ -244,76 +243,3 @@ end menu_SetViewCardBehavior
 on submenu_Dev
    return menu_DevTitle ("Global | Module | Tree | Menu")
 end submenu_Dev
-
-on _SelectModule viewObject
-   select viewObject
-end _SelectModule
-
-on _DeselectModule viewObject
-   select empty
-end _DeselectModule
-
-on _ModuleInfo viewObject
-   put the module_Array of viewObject into moduleArray
-   put moduleArray ["moduleName"] into moduleName
-   put merge ("[[moduleName]],Module Array") into someTitle
-   display_Array moduleArray, someTitle
-end _ModuleInfo
-
-on _DisplayToolMenuTitles viewObject
-   put view_ConstructToolMenu (viewObject)
-end _DisplayToolMenuTitles
-
-on _EditViewMenuFunction
-   -- find the function that creates the menu table for the tree
-   
-   hkey_Edit "F view_ConstructToolMenu"
-   --
-   if the result is empty then 
-      edit the script of stack "lib_DisplayView"
-   end if
-end _EditViewMenuFunction
-
-on _EditDisplayModuleTools
-   hkey_Edit "M display_ModuleTools"
-   --
-   if the result is empty then 
-      edit the script of stack "lib_DisplayModule"
-   end if
-end _EditDisplayModuleTools
-
-on _
-end _
-
-on _ResetMenus viewObject
-   put LocalArray ["displayView"] into displayView
-   --
-   put view_ConstructToolMenu (viewObject) into mTitles
-   set the title_Menu of displayView to mTitles
-end _ResetMenus
-
-on _
-end _
-
-on _CreateStandAlone viewObject
-   put LocalArray ["displayView"] into displayView
-   --
-   put the view_Name of viewObject into vName
-   put view_GetTemplateObject (vName) into templateObject
-   if exists (templateObject) is false then
-      breakpoint
-   end if
-   
-   put the stack_Name of templateObject into stackName
-   clone stack stackName
-   put it into clonedStack
-   set the destroyStack of clonedStack to true
-   set the destroyWindow of clonedStack to true
-   
-   put the long id of cd 1 of clonedStack into clonedTemplateCard
-   put the long id of control 1 of clonedTemplateCard into clonedView
-   
-   set the imported_ViewBehaviors of clonedView to true
-      
-   display_ViewBehaviors clonedView, empty, clonedStack
-end _CreateStandAlone
