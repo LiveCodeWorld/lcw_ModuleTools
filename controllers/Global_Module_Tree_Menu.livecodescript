@@ -8,23 +8,21 @@ type: controller
 version: 0.2
 
 
---> Menu | Init
+--> Menu | Props
 -
 local LocalArray
 
-getprop menu_CheckTarget
-   return true
-end menu_CheckTarget
-
 getprop menu_Target [tObject]
    put the display_View of tObject into displayView
+   --
    if exists (displayView) then
       put the displayed_Object of displayView into viewObject
       put displayView into LocalArray ["displayView"]
    else
       put the module_ViewObject of tObject into viewObject
-      if exists (viewObject) is fale then return tObject
-      
+      if exists (viewObject) is false then
+         return tObject
+      end if
    end if
    --
    return viewObject
@@ -43,30 +41,6 @@ getprop menu_CheckTarget [viewObject]
    --
    return true
 end menu_CheckTarget
-
-getprop disabled_CloseModuleStack
-   if LocalArray ["clonedStackNames"] is empty then
-      return true
-   else
-      return false
-   end if
-end disabled_CloseModuleStack
-
-getprop closeModuleStack_Params
-   return LocalArray ["clonedStackNames"]
-end closeModuleStack_Params
-
-getprop disabled_ModuleStackTools
-   if LocalArray ["clonedStackNames"] is empty then
-      return "delete"
-   else
-      return false
-   end if
-end disabled_ModuleStackTools
-
-getprop moduleStackTools_Params
-   return LocalArray ["clonedStackNames"]
-end moduleStackTools_Params
 
 command _importMenus viewObject
    put the module_Controllers of viewObject into cObjects
@@ -141,17 +115,10 @@ end _SetModuleInfo
 
 --> Global | Module | Tree | Menu
 -
-on menu_CreateModuleMenu viewObject
+on menu_ModuleHelp
    put LocalArray ["moduleName"] into moduleName
-   put LocalArray ["displayView"] into displayView
-   --
-   ask_CreateModuleMenu moduleName, displayView
-   --
-   -- module_CreateMenu moduleStackName, pGlobalMenuTitle, pControllerScript
-end menu_CreateModuleMenu
-
-private on _
-end _
+   draft_ModuleHelp moduleName
+end menu_ModuleHelp
 
 on menu_ModuleStackTools viewObject, moduleStackName
    replace ":" with "|" in moduleStackName
@@ -161,15 +128,129 @@ end menu_ModuleStackTools
 
 on menu_CloneModule viewObject
    put LocalArray ["moduleName"] into moduleName
-   if exists (stack moduleName) is false then lcw_AnswerWarning "No such stack!"
+   if exists (stack moduleName) is false then
+      breakpoint
+      lcw_AnswerWarning "No such stack!"
+   end if
    --
    stack_Clone moduleName
    put the result into clonedStack
    set the original_ModuleName of clonedStack to moduleName
+   put the stack_Name of clonedStack into cStackName
    --
-   put the stack_Name of clonedStack into moduleStackName
-   display_ModuleTools moduleStackName
+   display_CloneTools cStackName
 end menu_CloneModule
+
+getprop disabled_CloneModule
+   put LocalArray ["moduleName"] into moduleName
+   return exists (stack moduleName) is false
+end disabled_CloneModule
+
+private on _
+end _
+
+on menu_InsertMenuGroup sView
+   put the menubar_View of sView into mGroup
+   --
+   menubar_Insert sView
+end menu_InsertMenuGroup
+
+getprop disabled_InsertMenuGroup [sView]
+   put the menubar_View of sView into mGroup
+   if exists (mGroup) then
+      return "delete"
+   else
+      return false
+   end if
+end disabled_InsertMenuGroup
+
+on menu_DeleteMenuGroup sView
+   put the menubar_View of sView into mGroup
+   --
+   menubar_Delete mGroup
+end menu_DeleteMenuGroup
+
+getprop disabled_DeleteMenuGroup [sView]
+   put the menubar_View of sView into mGroup
+   if exists (mGroup) then
+      return false
+   else
+      return "delete"
+   end if
+end disabled_DeleteMenuGroup
+
+on menu_ShowMenu sView
+   put the menubar_View of sView into mGroup
+   --
+   menuBar_ToggleShowMenu mGroup
+end menu_ShowMenu
+
+getprop disabled_ShowMenu [sView]
+   put the menubar_View of sView into mGroup
+   if exists (mGroup) then
+      return false
+   else
+      return "delete"
+   end if
+end disabled_ShowMenu
+
+getprop checked_ShowMenu [sView]
+   put the menubar_View of sView into mGroup
+   if exists (mGroup) is false then return false
+   --
+   put the show_Menu of mGroup into sBoolean
+   return sBoolean
+end checked_ShowMenu
+
+private on __
+end __
+
+on menu_AddBrowser viewObject
+   put the stack_Name of viewObject into moduleName
+   put the card_Object of viewObject into cObject
+   --
+   put view_GetTemplateObject ("View|Browser") into browserView
+   copy browserView to cObject
+   put it into copiedBrowser
+   choose browse tool
+   --
+   set the module_ViewMetaData [true] of copiedBrowser to moduleName
+   dispatch "LayoutCard" to cObject
+   --
+end menu_AddBrowser
+
+on menu_SetModuleMenus sView
+   put the menubar_View of sView into mGroup
+   --
+   put the stack_Name of sView into moduleName
+   put "View|Keepass" into moduleName
+   --
+   put the module_ControllerStackNames of stack moduleName into mTitles
+   put the module_MenuTitle of stack moduleName into defaultMenu
+   line_Delete defaultMenu, mTitles
+   put defaultMenu & CR & mTitles into moduleMenuTitles
+   --
+   put lineOffset (" | Help | Menu", moduleMenuTitles) into lineNum
+   if lineNum > 0 then
+      put line lineNum of moduleMenuTitles into helpTitle
+      delete line lineNum of moduleMenuTitles
+      put CR & helpTitle after moduleMenuTitles
+   end if
+   --
+   set the menubar_Titles of mGroup to moduleMenuTitles
+end menu_SetModuleMenus
+
+private on ___
+end ___
+
+on menu_CreateModuleMenu viewObject
+   put LocalArray ["moduleName"] into moduleName
+   put LocalArray ["displayView"] into displayView
+   --
+   ask_CreateModuleMenu moduleName, displayView
+   --
+   -- module_CreateMenu moduleStackName, pGlobalMenuTitle, pControllerScript
+end menu_CreateModuleMenu
 
 on menu_CloseModuleStack viewObject, moduleStackName
    replace ":" with "|" in moduleStackName
@@ -177,25 +258,28 @@ on menu_CloseModuleStack viewObject, moduleStackName
    module_CloseStackAndTools moduleStackName
 end menu_CloseModuleStack
 
-private on __
-end __
+getprop disabled_CloseModuleStack
+   if LocalArray ["clonedStackNames"] is empty then
+      return true
+   else
+      return false
+   end if
+end disabled_CloseModuleStack
 
-on menu_RememberModuleStacks viewObject
-   set the cursor to watch
-   _SetModuleInfo shortModuleFolder, moduleFolder, moduleStackName, viewObject
-   
-   # Set module stackfiles
-   put the folder_StackFileArray of viewObject into stackFileArray
-   set the stackFile_Array of viewObject to stackFileArray
-   save stack moduleStackName
-   --
-   module_ExportMenusAndStackFiles moduleFolder
-   put the result into moduleArray
-   
-   # Check
-   put project_GetArrayFromFolder (moduleFolder) into moduleArray
-   display_Data moduleArray, moduleStackName, "Module Array"  
-end menu_RememberModuleStacks
+getprop closeModuleStack_Params
+   return LocalArray ["clonedStackNames"]
+end closeModuleStack_Params
+
+getprop disabled_ModuleStackTools
+   if LocalArray ["clonedStackNames"] is empty then
+      return "delete"
+   else
+      return false
+   end if
+end disabled_ModuleStackTools
+
+private on ____
+end ____
 
 on menu_DisplayModuleMenus viewObject
    set the cursor to watch
@@ -205,40 +289,18 @@ on menu_DisplayModuleMenus viewObject
    display_Data moduleArray, moduleStackName, "Module Array"  
 end menu_DisplayModuleMenus
 
-on menu_RememberProjectStacks viewObject
-   put the project_Name of viewObject into projectName
-   put project_GetFolder (projectName) into projectFolder
-   if there is not a folder projectFolder then
-      lcw_AnswerWarning "Cannot find a project folder for project:" && projectName
-   end if
-   
-   # Construct and Store projectArray
-   put project_ConstructArrayFromFolder (projectFolder) into projectArray
-   project_StoreArray projectFolder, projectArray
-   
-   # Display
-   display_ProjectLibs projectName
-   display_GitRefreshProjectName projectName
-end menu_RememberProjectStacks
+private on ____
+end ____
 
 on menu_RevealModuleFolder
    put LocalArray ["moduleFolder"] into moduleFolder
    finder_Reveal moduleFolder
 end menu_RevealModuleFolder
 
-private on ___
-end ___
-
 on menu_Refresh viewObject
    put the view_Name of viewObject into moduleStackName
    display_ModuleTools moduleStackName
 end menu_Refresh
-
-on menu_SetViewCardBehavior viewObject
-   lcw_Answer "Set the behavior of the views card to the stack 'behavior_ViewTemplateCard'?"
-   put the card_Object of viewObject into cardObject
-   set the behavior of cardObject to the long id of stack "behavior_ViewTemplateCard"
-end menu_SetViewCardBehavior
 
 on submenu_Dev
    return menu_DevTitle ("Global | Module | Tree | Menu")

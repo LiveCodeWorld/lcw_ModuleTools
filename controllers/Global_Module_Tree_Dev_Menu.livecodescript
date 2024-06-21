@@ -14,15 +14,24 @@ Full help text should be provided on the linked wiki.
 Consider improving by creating with same menu_Target as no-developer menu is is based on.
 */
 
---> Variables
+--> Menu | Props
 -
 local LocalArray
 
---> Menu | Props
--
 getprop menu_Target [tObject]
-   -- return display_MenuTarget(tObject)
-   return the display_View of tObject
+   put the display_View of tObject into displayView
+   --
+   if exists (displayView) then
+      put the displayed_Object of displayView into viewObject
+      put displayView into LocalArray ["displayView"]
+   else
+      put the module_ViewObject of tObject into viewObject
+      if exists (viewObject) is false then
+         return tObject
+      end if
+   end if
+   --
+   return viewObject
 end menu_Target
 
 getprop menu_CheckTarget [mTarget]
@@ -32,9 +41,44 @@ end menu_CheckTarget
 
 --> Global | Module | Tree | Dev | Menu
 -
-on submenu_ModuleMenu
-   return "Global | Module | Menu"
-end submenu_ModuleMenu
+on menu_SetViewCardBehavior viewObject
+   lcw_Answer "Set the behavior of the views card to the stack 'behavior_ViewTemplateCard'?"
+   put the card_Object of viewObject into cardObject
+   set the behavior of cardObject to the long id of stack "behavior_ViewTemplateCard"
+end menu_SetViewCardBehavior
+
+on menu_RememberModuleStacks viewObject
+   set the cursor to watch
+   _SetModuleInfo shortModuleFolder, moduleFolder, moduleStackName, viewObject
+   
+   # Set module stackfiles
+   put the folder_StackFileArray of viewObject into stackFileArray
+   set the stackFile_Array of viewObject to stackFileArray
+   save stack moduleStackName
+   --
+   module_ExportMenusAndStackFiles moduleFolder
+   put the result into moduleArray
+   
+   # Check
+   put project_GetArrayFromFolder (moduleFolder) into moduleArray
+   display_Data moduleArray, moduleStackName, "Module Array"  
+end menu_RememberModuleStacks
+
+on menu_RememberProjectStacks viewObject
+   put the project_Name of viewObject into projectName
+   put project_GetFolder (projectName) into projectFolder
+   if there is not a folder projectFolder then
+      lcw_AnswerWarning "Cannot find a project folder for project:" && projectName
+   end if
+   
+   # Construct and Store projectArray
+   put project_ConstructArrayFromFolder (projectFolder) into projectArray
+   project_StoreArray projectFolder, projectArray
+   
+   # Display
+   display_ProjectLibs projectName
+   display_GitRefreshProjectName projectName
+end menu_RememberProjectStacks
 
 private command _
 end _
@@ -54,25 +98,6 @@ end menu_DisplayToolMenuTitles
 on _
 end _
 
-on _CreateStandAlone viewObject
-   put LocalArray ["displayView"] into displayView
-   --
-   put the view_Name of viewObject into vName
-   put view_GetTemplateObject (vName) into templateObject
-   if exists (templateObject) is false then
-      breakpoint
-   end if
-   
-   put the stack_Name of templateObject into stackName
-   clone stack stackName
-   put it into clonedStack
-   set the destroyStack of clonedStack to true
-   set the destroyWindow of clonedStack to true
-   
-   put the long id of cd 1 of clonedStack into clonedTemplateCard
-   put the long id of control 1 of clonedTemplateCard into clonedView
-   
-   set the imported_ViewBehaviors of clonedView to true
-      
-   display_ViewBehaviors clonedView, empty, clonedStack
-end _CreateStandAlone
+on submenu_ModuleMenu
+   return "Global | Module | Menu"
+end submenu_ModuleMenu
