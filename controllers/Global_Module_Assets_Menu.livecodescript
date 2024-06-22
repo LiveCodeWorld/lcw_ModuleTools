@@ -28,8 +28,7 @@ getprop menu_CheckTarget [browserView]
    if exists (browserView) is false then
       return false
    else
-      put the module_ShortHtmlFiles of browserView into shortFiles
-      put shortFiles into LocalArray ["module_ShortHtmlFiles"]
+      put the module_ShortHtmlFiles of browserView into LocalArray ["module_ShortHtmlFiles"]
       return true
    end if
 end menu_CheckTarget
@@ -122,9 +121,6 @@ getprop disabled_DisplayHtmlText
 end disabled_DisplayHtmlText
 
 on menu_DisplayInBrowser browserView, shortHtmlFile
-   -- answer file "Where is Firefox?"
-   -- put it
-   --
    put the module_HtmlFile [shortHtmlFile] of browserView into localFile
    launch localFile with "/Applications/Firefox.app"
    -- launch url ("file:///" & localFile) with "/Applications/Firefox.app"

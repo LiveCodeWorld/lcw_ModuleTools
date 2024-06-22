@@ -206,18 +206,37 @@ private on __
 end __
 
 on menu_AddBrowser viewObject
+   breakpoint
    put the stack_Name of viewObject into moduleName
    put the card_Object of viewObject into cObject
-   --
+   
+   # Create browser
    put view_GetTemplateObject ("View|Browser") into browserView
    copy browserView to cObject
    put it into copiedBrowser
    choose browse tool
-   --
-   set the module_ViewMetaData [true] of copiedBrowser to moduleName
+   -- could simply have created browser and set behaviors
+   set the opaque of copiedBrowser to true
+   
+   # Set metadata
+   set the module_ViewMetaData [false] of copiedBrowser to moduleName
+   set the name of copiedBrowser to moduleName
+   put the behavior of copiedBrowser into bObject
+   
+   # Add browser behavior to module behaviors
+   put the module_Behaviors of viewObject into moduleBehaviors
+   line_Add bObject, moduleBehaviors
+   set the behavior_Objects of viewObject to moduleBehaviors
+   
    dispatch "LayoutCard" to cObject
-   --
+   lcw_Notify "Copied browser to this card!"
 end menu_AddBrowser
+
+getprop disabled_AddBrowser [viewObject]
+   put the card_Object of viewObject into cObject
+   put the childControlIDs of cObject into cIDS
+   return cIDS is not empty
+end disabled_AddBrowser
 
 on menu_SetModuleMenus sView
    put the menubar_View of sView into mGroup
