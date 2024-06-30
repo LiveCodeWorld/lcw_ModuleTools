@@ -206,33 +206,42 @@ private on __
 end __
 
 on menu_AddBrowser viewObject
-   breakpoint
    put the stack_Name of viewObject into moduleName
    put the card_Object of viewObject into cObject
+   --
+   put the name of cObject into oName
+   lcw_Answer "Add browser View to [[var]]", viewObject, oName
    
    # Create browser
    put view_GetTemplateObject ("View|Browser") into browserView
    copy browserView to cObject
    put it into copiedBrowser
-   choose browse tool
+   put the behavior of copiedBrowser into bObject
+   
+   # Tidy
    -- could simply have created browser and set behaviors
+   choose browse tool
    set the opaque of copiedBrowser to true
    
    # Set metadata
    set the module_ViewMetaData [false] of copiedBrowser to moduleName
    set the name of copiedBrowser to moduleName
-   put the behavior of copiedBrowser into bObject
+   set the card_Margin of cObject to 12
+   set the backgroundcolor of cObject to "green"
    
    # Add browser behavior to module behaviors
    put the module_Behaviors of viewObject into moduleBehaviors
    line_Add bObject, moduleBehaviors
-   set the behavior_Objects of viewObject to moduleBehaviors
+   set the behavior_Objects of copiedBrowser to moduleBehaviors
    
    dispatch "LayoutCard" to cObject
    lcw_Notify "Copied browser to this card!"
+   --
+   put the behavior of copiedBrowser into mBehavior
+   edit the script of mBehavior
 end menu_AddBrowser
 
-getprop disabled_AddBrowser [viewObject]
+-- getprop disabled_AddBrowser [viewObject]
    put the card_Object of viewObject into cObject
    put the childControlIDs of cObject into cIDS
    return cIDS is not empty

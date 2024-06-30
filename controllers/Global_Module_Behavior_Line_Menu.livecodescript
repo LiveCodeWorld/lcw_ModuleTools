@@ -22,18 +22,6 @@ getprop menu_Target [tObject]
    return dView
 end menu_Target
 
--- getprop menu_CheckTarget [dView]
-if exists (dView) is false then return true
---
-put item 2 of the selected_Path of dView into shortFile
-if shortFile is not empty then
-   --  if exists (stack bStackName) then
-   return true
-else
-   return false
-end if
-end menu_CheckTarget
-
 private function _GetShortFile dView
    put item 2 of the selected_Path of dView into shortFile
    return shortFile
@@ -52,6 +40,13 @@ private function _GetModuleStackName dView
    return moduleStackName
 end _GetModuleStackName
 
+private function _ConstructModulePath dView
+   put _GetModuleStackName (dView) into moduleStackName
+   put the project_Name of stack moduleStackName into projectName
+   put env_ConstructHomePath (projectName) into mStackPath
+   return mStackPath
+end _ConstructModulePath
+
 private function _GetModuleFolder dView
    put _GetModuleStackName (dView) into moduleStackName
    put the module_Folder of stack moduleStackName into moduleFolder
@@ -66,14 +61,12 @@ private function _GetStackPath dView
    put _GetModuleFolder (dView) into moduleFolder
    put folder_AddShort (moduleFolder, shortFolder) & shortFile into stackPath
    --
-   return stackPath
+   if there is a stack stackPath then
+      return stackPath
+   else
+      return empty
+   end if
 end _GetStackPath
-
-private function _ConstructModulePath dView
-   put _GetModuleFolder (dView) into moduleFolder
-   put project_ConstructHomeStackPath (moduleFolder) into mStackPath
-   return mStackPath
-end _ConstructModulePath
 
 
 --> Global | Module | Behavior | Line | Menu
@@ -134,9 +127,26 @@ on _
 end _
 
 on menu_Reveal dView
-   put _ConstructModulePath (dView) into mStackPath
+   -- put _GetStackPath (dView) into behaviorStackPath
+   put _ConstructModulePath (dView) into behaviorStackPath
    finder_Reveal mStackPath
 end menu_Reveal
+
+on menu_TrashBehavior dView
+   put _GetStackPath (dView) into bStackPath
+   --
+   put the short name of stack bStackPath into sName
+   lcw_Answer "Trash behavior of stack ;[[var]]'?", dView, sName
+   --
+   module_TrashStack bStackPath
+   --
+   display_ModuleTools bStackPath
+end menu_TrashBehavior
+
+getprop disabled_TrashBehavior [dView]
+   put _GetStackPath (dView) into bStackPath
+   return exists (stack bStackPath) is false
+end disabled_TrashBehavior
 
 on menu_CheckBehavior dView
    put _GetModuleView (dView) into moduleView
@@ -186,12 +196,6 @@ on _TestMoveRename dView
    --
    edit the script of stack newBehaviorPath
 end _TestMoveRename
-
-on _RevealBehaviorFolder dView
-   put _GetStackPath (dView) into behaviorStackPath
-   --
-   finder_Reveal behaviorStackPath
-end _RevealBehaviorFolder
 
 on _RenameBehavior dView
    put _GetStackPath (dView) into stackPath
