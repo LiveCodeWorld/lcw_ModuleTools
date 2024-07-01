@@ -102,16 +102,6 @@ getprop disabled_SetViewCardBehavior [viewObject]
    return behaviorIsSet
 end disabled_SetViewCardBehavior
 
-private command _SetModuleInfo @shortModuleFolder, @moduleFolder, @moduleStackName, viewObject
-   put the module_ShortFolder of viewObject into shortModuleFolder
-   put the view_Name of viewObject into moduleStackName
-   if exists (stack moduleStackName) is false then
-      put LocalArray ["displayView"] into displayView
-      lcw_AnswerWarning "Cannot local module stack '[[moduleStackName]]!", displayView, moduleStackName
-   end if
-   put the module_Folder of viewObject into moduleFolder
-end _SetModuleInfo
-
 
 --> Global | Module | Tree | Menu
 -
@@ -316,6 +306,16 @@ on menu_DisplayModuleMenus viewObject
    put project_GetArrayFromFolder (moduleFolder) into moduleArray
    display_Data moduleArray, moduleStackName, "Module Array"  
 end menu_DisplayModuleMenus
+
+private command _SetModuleInfo @shortModuleFolder, @moduleFolder, @moduleStackName, viewObject
+   put the module_ShortFolder of viewObject into shortModuleFolder
+   put the view_Name of viewObject into moduleStackName
+   if exists (stack moduleStackName) is false then
+      put LocalArray ["displayView"] into displayView
+      lcw_AnswerWarning "Cannot local module stack '[[moduleStackName]]!", displayView, moduleStackName
+   end if
+   put the module_Folder of viewObject into moduleFolder
+end _SetModuleInfo
 
 private on ____
 end ____

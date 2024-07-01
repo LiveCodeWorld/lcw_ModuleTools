@@ -47,23 +47,6 @@ on menu_SetViewCardBehavior viewObject
    set the behavior of cardObject to the long id of stack "behavior_ViewTemplateCard"
 end menu_SetViewCardBehavior
 
-on menu_RememberModuleStacks viewObject
-   set the cursor to watch
-   _SetModuleInfo shortModuleFolder, moduleFolder, moduleStackName, viewObject
-   
-   # Set module stackfiles
-   put the folder_StackFileArray of viewObject into stackFileArray
-   set the stackFile_Array of viewObject to stackFileArray
-   save stack moduleStackName
-   --
-   module_ExportMenusAndStackFiles moduleFolder
-   put the result into moduleArray
-   
-   # Check
-   put project_GetArrayFromFolder (moduleFolder) into moduleArray
-   display_Data moduleArray, moduleStackName, "Module Array"  
-end menu_RememberModuleStacks
-
 on menu_RememberProjectStacks viewObject
    put the project_Name of viewObject into projectName
    put project_GetFolder (projectName) into projectFolder
