@@ -38,8 +38,14 @@ end menu_CheckTarget
 -
 on menu_EditHtml browserView, shortHtmlFile
    put the module_HtmlFile [shortHtmlFile] of browserView into localFile
-   atom_DisplayFile localFile
+   -- atom_DisplayFile localFile
+   code_OpenFile localFile
 end menu_EditHtml
+
+getprop editHtml_Params
+   put LocalArray ["module_ShortHtmlFiles"] into shortFiles
+   return shortFiles
+end editHtml_Params
 
 private on _
 end _
@@ -88,6 +94,7 @@ end __
 
 on menu_DisplayLocalFile browserView, shortHtmlFile
    put the module_HtmlFile [shortHtmlFile] of browserView into localFile
+   --
    if there is a file localFile then
       set the browser_File of browserView to localFile
    else
@@ -155,6 +162,30 @@ end menu_CreateHtmlFile
 
 private on ____
 end ____
+
+on menu_TrashAssets sView
+   put the module_AssetFolder of sView into assetFolder
+   --
+   lcw_Answer "Move asset folder to trash?", sView
+   --
+   revDeleteFolder assetFolder
+   create folder assetFolder
+end menu_TrashAssets
+
+on menu_XtermAtAssetFolder sView
+   put the module_AssetFolder of sView into assetFolder
+   --
+   display_XtermAtFolder pFolder
+end menu_XtermAtAssetFolder
+
+on menu_CopyAssetFolderShell sView
+   put the module_AssetFolder of sView into assetFolder
+   --
+   put "cd" && kwote (assetFolder) into someShell
+   set the clipboardData to someShell
+   --
+   lcw_AnswerWarning "Copied shell command to clipboard!"
+end menu_CopyAssetFolderShell
 
 on menu_ModuleAssetFolder browserView
    put the module_AssetFolder of browserView into assetFolder
