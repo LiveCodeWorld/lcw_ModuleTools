@@ -102,6 +102,16 @@ getprop disabled_SetViewCardBehavior [viewObject]
    return behaviorIsSet
 end disabled_SetViewCardBehavior
 
+private command _SetModuleInfo @shortModuleFolder, @moduleFolder, @moduleStackName, viewObject
+   put the module_ShortFolder of viewObject into shortModuleFolder
+   put the view_Name of viewObject into moduleStackName
+   if exists (stack moduleStackName) is false then
+      put LocalArray ["displayView"] into displayView
+      lcw_AnswerWarning "Cannot local module stack '[[moduleStackName]]!", displayView, moduleStackName
+   end if
+   put the module_Folder of viewObject into moduleFolder
+end _SetModuleInfo
+
 
 --> Global | Module | Tree | Menu
 -
@@ -307,16 +317,6 @@ on menu_DisplayModuleMenus viewObject
    display_Data moduleArray, moduleStackName, "Module Array"  
 end menu_DisplayModuleMenus
 
-private command _SetModuleInfo @shortModuleFolder, @moduleFolder, @moduleStackName, viewObject
-   put the module_ShortFolder of viewObject into shortModuleFolder
-   put the view_Name of viewObject into moduleStackName
-   if exists (stack moduleStackName) is false then
-      put LocalArray ["displayView"] into displayView
-      lcw_AnswerWarning "Cannot local module stack '[[moduleStackName]]!", displayView, moduleStackName
-   end if
-   put the module_Folder of viewObject into moduleFolder
-end _SetModuleInfo
-
 private on ____
 end ____
 
@@ -324,6 +324,37 @@ on menu_RevealModuleFolder
    put LocalArray ["moduleFolder"] into moduleFolder
    finder_Reveal moduleFolder
 end menu_RevealModuleFolder
+
+on menu_SetCardDisplayedObject viewObject
+   put the card_Object of viewObject into cardObject
+   set the displayed_Object of cardObject to viewObject
+end menu_SetCardDisplayedObject
+
+getprop checked_SetCardDisplayedObject [viewObject]
+   if exists (viewObject) is false then return false
+   --
+   put the card_Object of viewObject into cardObject
+   put the displayed_Object of cardObject into displayedObject
+   --
+   if exists (displayedObject) is false then return false
+   put the long id of displayedObject = the long id of viewObject into sBoolean
+   return sBoolean
+end checked_SetCardDisplayedObject
+
+on menu_ExportModuleJson viewObject
+   _SetModuleInfo shortModuleFolder, moduleFolder, moduleStackName, viewObject
+   if there is not a folder moduleFolder then
+      breakpoint
+      exit to top
+   end if
+   
+   project_ExportMenusAndStackFiles moduleFolder
+   --
+   menu_Refresh viewObject
+end menu_ExportModuleJson
+
+private on _____
+end _____
 
 on menu_Refresh viewObject
    put the view_Name of viewObject into moduleStackName

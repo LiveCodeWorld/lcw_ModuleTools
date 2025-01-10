@@ -39,7 +39,7 @@ end menu_CheckTarget
 on menu_EditHtml browserView, shortHtmlFile
    put the module_HtmlFile [shortHtmlFile] of browserView into localFile
    -- atom_DisplayFile localFile
-   code_OpenFile localFile
+   code_EditFile localFile
 end menu_EditHtml
 
 getprop editHtml_Params
