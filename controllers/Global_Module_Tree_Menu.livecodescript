@@ -115,6 +115,35 @@ end _SetModuleInfo
 
 --> Global | Module | Tree | Menu
 -
+on menu_MakeFirstView tObject
+   put _FirstControl (tObject) into firstControl
+   put the stack_Name of firstControl into viewName
+   --
+   breakpoint
+   set the module_ViewMetaData [true] of firstControl to viewName
+   display_ObjectProperties firstControl
+   edit the script of firstControl
+end menu_MakeFirstView
+
+private function _FirstControl tObject
+   put the card_Object of tObject into cObject
+   get the top_Controls of cObject
+   put line 1 of it into firstControl
+   return firstControl
+end _FirstControl
+
+getprop disabled_MakeFirstView [tObject]
+   put _FirstControl (tObject) into firstControl
+   if exists (firstControl) is false then
+      return true
+   end if
+   --
+   put the view_Name of firstControl into vName
+   put the module_Name of firstControl into mName
+   put the stack_Name of firstControl into sName
+   return sName is vName
+end disabled_MakeFirstView
+
 on menu_ModuleHelp
    put LocalArray ["moduleName"] into moduleName
    draft_ModuleHelp moduleName
@@ -325,6 +354,33 @@ on menu_RevealModuleFolder
    finder_Reveal moduleFolder
 end menu_RevealModuleFolder
 
+on menu_UpdateModuleArray viewObject
+   _SetModuleInfo shortModuleFolder, moduleFolder, moduleStackName, viewObject
+   --
+   put the module_Name of viewObject into moduleStackName
+   module_Update moduleStackName
+   put the result into moduleArray
+   
+   # Check
+   put project_GetArrayFromFolder (moduleFolder) into moduleArray
+   display_Data moduleArray, moduleStackName, "Module Array"
+   put the result into dView
+   return  dView
+end menu_UpdateModuleArray
+
+getprop checked_UpdateModuleArray [viewObject]
+   put the module_JsonFile of viewObject into moduleJsonFile
+   return there is a file moduleJsonFile   
+end checked_UpdateModuleArray
+
+getprop disabled_UpdateModuleArray [viewObject]
+   put the module_Name of viewObject into moduleStackName
+   return moduleStackName is empty
+end disabled_UpdateModuleArray
+   
+private on _____
+end _____
+
 on menu_SetCardDisplayedObject viewObject
    put the card_Object of viewObject into cardObject
    set the displayed_Object of cardObject to viewObject
@@ -340,21 +396,6 @@ getprop checked_SetCardDisplayedObject [viewObject]
    put the long id of displayedObject = the long id of viewObject into sBoolean
    return sBoolean
 end checked_SetCardDisplayedObject
-
-on menu_ExportModuleJson viewObject
-   _SetModuleInfo shortModuleFolder, moduleFolder, moduleStackName, viewObject
-   if there is not a folder moduleFolder then
-      breakpoint
-      exit to top
-   end if
-   
-   project_ExportMenusAndStackFiles moduleFolder
-   --
-   menu_Refresh viewObject
-end menu_ExportModuleJson
-
-private on _____
-end _____
 
 on menu_Refresh viewObject
    put the view_Name of viewObject into moduleStackName

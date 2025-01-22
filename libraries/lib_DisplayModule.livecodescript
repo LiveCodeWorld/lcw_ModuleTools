@@ -174,16 +174,27 @@ end _EditProperty
 -
 command display_ModuleFromStackName moduleStackName
    put the module_Folder of stack moduleStackName into moduleFolder
-   display_Module moduleFolder
+   display_ModuleFromFolder moduleFolder
 end display_ModuleFromStackName
 
 command display_ModuleFromShortModuleFolder shortModuleFolder
    put env_GetModuleFolder (shortModuleFolder) into moduleFolder
    --
-   display_Module moduleFolder
+   display_ModuleFromFolder moduleFolder
 end display_ModuleFromShortModuleFolder
 
-command display_Module moduleFolder
+command display_Module mName, pShowTools, pMakeVisible
+   put pMakeVisible is not false into pMakeVisible
+   view_NormalizeName mName
+   put view_GetTemplateObject (mName) into mObject
+   object_GoTo mObject, pMakeVisible
+   
+   if the shiftKey is "Down" or pShowTools is true then
+      display_ModuleTools mName
+   end if
+end display_Module
+
+command display_ModuleFromFolder moduleFolder
    -- put project_PathFromFolder (moduleFolder) into moduleHomeStackPath
    put project_FirstStackPath (moduleFolder) into moduleHomeStackPath
    --
@@ -193,7 +204,7 @@ command display_Module moduleFolder
    display_ModuleTools moduleName, false
    --
    return the result
-end display_Module
+end display_ModuleFromFolder
 
 
 --> Display | Module | List
