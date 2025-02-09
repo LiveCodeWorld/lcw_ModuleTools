@@ -146,6 +146,25 @@ end disabled_DisplayInBrowser
 private on ___
 end ___
 
+on menu_XtermAssetFolder sView
+   put the module_AssetFolder of sView into assetFolder
+   --
+   display_XtermAtFolder assetFolder
+end menu_XtermAssetFolder
+
+on menu_ModuleAssetFolder browserView
+   put the module_AssetFolder of browserView into assetFolder
+   finder_Reveal assetFolder
+end menu_ModuleAssetFolder
+
+on menu_ProjectAssetFolder browserView
+   put the project_AssetFolder of browserView into assetFolder
+   finder_Reveal assetFolder
+end menu_ProjectAssetFolder
+
+private on ____
+end ____
+
 on menu_CreateHtmlFile browserView
    put lcw_Ask ("What file name would you like for the new HTML file?", "xxx.html") into shortHtmlFile
    put the module_HtmlFile [shortHtmlFile] of browserView into localFile
@@ -160,9 +179,6 @@ on menu_CreateHtmlFile browserView
    atom_DisplayFile localFile
 end menu_CreateHtmlFile
 
-private on ____
-end ____
-
 on menu_TrashAssets sView
    put the module_AssetFolder of sView into assetFolder
    --
@@ -171,28 +187,3 @@ on menu_TrashAssets sView
    revDeleteFolder assetFolder
    create folder assetFolder
 end menu_TrashAssets
-
-on menu_XtermAtAssetFolder sView
-   put the module_AssetFolder of sView into assetFolder
-   --
-   display_XtermAtFolder pFolder
-end menu_XtermAtAssetFolder
-
-on menu_CopyAssetFolderShell sView
-   put the module_AssetFolder of sView into assetFolder
-   --
-   put "cd" && kwote (assetFolder) into someShell
-   set the clipboardData to someShell
-   --
-   lcw_AnswerWarning "Copied shell command to clipboard!"
-end menu_CopyAssetFolderShell
-
-on menu_ModuleAssetFolder browserView
-   put the module_AssetFolder of browserView into assetFolder
-   finder_Reveal assetFolder
-end menu_ModuleAssetFolder
-
-on menu_ProjectAssetFolder browserView
-   put the project_AssetFolder of browserView into assetFolder
-   finder_Reveal assetFolder
-end menu_ProjectAssetFolder

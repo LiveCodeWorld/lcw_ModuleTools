@@ -112,19 +112,6 @@ private command _SetModuleInfo @shortModuleFolder, @moduleFolder, @moduleStackNa
    put the module_Folder of viewObject into moduleFolder
 end _SetModuleInfo
 
-
---> Global | Module | Tree | Menu
--
-on menu_MakeFirstView tObject
-   put _FirstControl (tObject) into firstControl
-   put the stack_Name of firstControl into viewName
-   --
-   breakpoint
-   set the module_ViewMetaData [true] of firstControl to viewName
-   display_ObjectProperties firstControl
-   edit the script of firstControl
-end menu_MakeFirstView
-
 private function _FirstControl tObject
    put the card_Object of tObject into cObject
    get the top_Controls of cObject
@@ -143,6 +130,100 @@ getprop disabled_MakeFirstView [tObject]
    put the stack_Name of firstControl into sName
    return sName is vName
 end disabled_MakeFirstView
+
+getprop disabled_ShowMenu [sView]
+   put the menubar_View of sView into mGroup
+   if exists (mGroup) then
+      return false
+   else
+      return "delete"
+   end if
+end disabled_ShowMenu
+
+getprop disabled_CloneModule
+   put LocalArray ["moduleName"] into moduleName
+   return exists (stack moduleName) is false
+end disabled_CloneModule
+
+getprop disabled_InsertMenuGroup [sView]
+   put the menubar_View of sView into mGroup
+   if exists (mGroup) then
+      return "delete"
+   else
+      return false
+   end if
+end disabled_InsertMenuGroup
+
+getprop disabled_DeleteMenuGroup [sView]
+   put the menubar_View of sView into mGroup
+   if exists (mGroup) then
+      return false
+   else
+      return "delete"
+   end if
+end disabled_DeleteMenuGroup
+
+getprop checked_ShowMenu [sView]
+   put the menubar_View of sView into mGroup
+   if exists (mGroup) is false then return false
+   --
+   put the show_Menu of mGroup into sBoolean
+   return sBoolean
+end checked_ShowMenu
+
+getprop disabled_CloseModuleStack
+   if LocalArray ["clonedStackNames"] is empty then
+      return true
+   else
+      return false
+   end if
+end disabled_CloseModuleStack
+
+getprop closeModuleStack_Params
+   return LocalArray ["clonedStackNames"]
+end closeModuleStack_Params
+
+getprop disabled_ModuleStackTools
+   if LocalArray ["clonedStackNames"] is empty then
+      return "delete"
+   else
+      return false
+   end if
+end disabled_ModuleStackTools
+
+getprop checked_UpdateModuleArray [viewObject]
+   put the module_JsonFile of viewObject into moduleJsonFile
+   return there is a file moduleJsonFile   
+end checked_UpdateModuleArray
+
+getprop disabled_UpdateModuleArray [viewObject]
+   put the module_Name of viewObject into moduleStackName
+   return moduleStackName is empty
+end disabled_UpdateModuleArray
+   
+getprop checked_SetCardDisplayedObject [viewObject]
+   if exists (viewObject) is false then return false
+   --
+   put the card_Object of viewObject into cardObject
+   put the displayed_Object of cardObject into displayedObject
+   --
+   if exists (displayedObject) is false then return false
+   put the long id of displayedObject = the long id of viewObject into sBoolean
+   return sBoolean
+end checked_SetCardDisplayedObject
+
+
+--> Global | Module | Tree | Menu
+-
+on menu_MakeFirstView tObject
+   put _FirstControl (tObject) into firstControl
+   put the stack_Name of firstControl into viewName
+   --
+   breakpoint
+   set the module_ViewMetaData [true] of firstControl to viewName
+   display_ObjectProperties firstControl
+   edit the script of firstControl
+end menu_MakeFirstView
 
 on menu_ModuleHelp
    put LocalArray ["moduleName"] into moduleName
@@ -170,11 +251,6 @@ on menu_CloneModule viewObject
    display_CloneTools cStackName
 end menu_CloneModule
 
-getprop disabled_CloneModule
-   put LocalArray ["moduleName"] into moduleName
-   return exists (stack moduleName) is false
-end disabled_CloneModule
-
 private on _
 end _
 
@@ -184,52 +260,17 @@ on menu_InsertMenuGroup sView
    menubar_Insert sView
 end menu_InsertMenuGroup
 
-getprop disabled_InsertMenuGroup [sView]
-   put the menubar_View of sView into mGroup
-   if exists (mGroup) then
-      return "delete"
-   else
-      return false
-   end if
-end disabled_InsertMenuGroup
-
 on menu_DeleteMenuGroup sView
    put the menubar_View of sView into mGroup
    --
    menubar_Delete mGroup
 end menu_DeleteMenuGroup
 
-getprop disabled_DeleteMenuGroup [sView]
-   put the menubar_View of sView into mGroup
-   if exists (mGroup) then
-      return false
-   else
-      return "delete"
-   end if
-end disabled_DeleteMenuGroup
-
 on menu_ShowMenu sView
    put the menubar_View of sView into mGroup
    --
    menuBar_ToggleShowMenu mGroup
 end menu_ShowMenu
-
-getprop disabled_ShowMenu [sView]
-   put the menubar_View of sView into mGroup
-   if exists (mGroup) then
-      return false
-   else
-      return "delete"
-   end if
-end disabled_ShowMenu
-
-getprop checked_ShowMenu [sView]
-   put the menubar_View of sView into mGroup
-   if exists (mGroup) is false then return false
-   --
-   put the show_Menu of mGroup into sBoolean
-   return sBoolean
-end checked_ShowMenu
 
 private on __
 end __
@@ -304,9 +345,9 @@ on menu_CreateModuleMenu viewObject
    put LocalArray ["moduleName"] into moduleName
    put LocalArray ["displayView"] into displayView
    --
-   ask_CreateModuleMenu moduleName, displayView
-   --
-   -- module_CreateMenu moduleStackName, pGlobalMenuTitle, pControllerScript
+   ask_CreateModuleMenu moduleName, empty, empty, displayView
+   put the result into mController
+   edit the script of mController
 end menu_CreateModuleMenu
 
 on menu_CloseModuleStack viewObject, moduleStackName
@@ -314,26 +355,6 @@ on menu_CloseModuleStack viewObject, moduleStackName
    --
    module_CloseStackAndTools moduleStackName
 end menu_CloseModuleStack
-
-getprop disabled_CloseModuleStack
-   if LocalArray ["clonedStackNames"] is empty then
-      return true
-   else
-      return false
-   end if
-end disabled_CloseModuleStack
-
-getprop closeModuleStack_Params
-   return LocalArray ["clonedStackNames"]
-end closeModuleStack_Params
-
-getprop disabled_ModuleStackTools
-   if LocalArray ["clonedStackNames"] is empty then
-      return "delete"
-   else
-      return false
-   end if
-end disabled_ModuleStackTools
 
 private on ____
 end ____
@@ -368,16 +389,6 @@ on menu_UpdateModuleArray viewObject
    return  dView
 end menu_UpdateModuleArray
 
-getprop checked_UpdateModuleArray [viewObject]
-   put the module_JsonFile of viewObject into moduleJsonFile
-   return there is a file moduleJsonFile   
-end checked_UpdateModuleArray
-
-getprop disabled_UpdateModuleArray [viewObject]
-   put the module_Name of viewObject into moduleStackName
-   return moduleStackName is empty
-end disabled_UpdateModuleArray
-   
 private on _____
 end _____
 
@@ -385,17 +396,6 @@ on menu_SetCardDisplayedObject viewObject
    put the card_Object of viewObject into cardObject
    set the displayed_Object of cardObject to viewObject
 end menu_SetCardDisplayedObject
-
-getprop checked_SetCardDisplayedObject [viewObject]
-   if exists (viewObject) is false then return false
-   --
-   put the card_Object of viewObject into cardObject
-   put the displayed_Object of cardObject into displayedObject
-   --
-   if exists (displayedObject) is false then return false
-   put the long id of displayedObject = the long id of viewObject into sBoolean
-   return sBoolean
-end checked_SetCardDisplayedObject
 
 on menu_Refresh viewObject
    put the view_Name of viewObject into moduleStackName
