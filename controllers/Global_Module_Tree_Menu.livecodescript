@@ -125,8 +125,12 @@ getprop disabled_MakeFirstView [tObject]
       return true
    end if
    --
-   put the view_Name of firstControl into vName
    put the module_Name of firstControl into mName
+   if mName is empty then
+      return true
+   end if
+   
+   put the view_Name of firstControl into vName
    put the stack_Name of firstControl into sName
    return sName is vName
 end disabled_MakeFirstView
@@ -393,9 +397,14 @@ private on _____
 end _____
 
 on menu_SetCardDisplayedObject viewObject
+   breakpoint
    put the card_Object of viewObject into cardObject
    set the displayed_Object of cardObject to viewObject
 end menu_SetCardDisplayedObject
+
+on menu_RandomCardColour viewObject
+   set the card_Colour of viewObject to "random"
+end menu_RandomCardColour
 
 on menu_Refresh viewObject
    put the view_Name of viewObject into moduleStackName

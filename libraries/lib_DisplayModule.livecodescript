@@ -7,6 +7,91 @@ type: library
 version: 0.3
 
 
+--> Display | Old
+-
+command display_OldViewFiles
+   put view_ListOldShortPaths() into oldViewShortFiles
+   --
+   display_Data oldViewShortFiles, "Old Views", "Revolution"
+   put the result into displayView
+   display_SetInteractions displayView, "View | Old", "mDoubleUp_OldView"
+   return displayView
+end display_OldViewFiles
+
+on mDoubleUp_OldView displayView, shortFile
+   if char 1 of shortFile = "." then
+      delete char 1 of shortFile
+   end if
+   --
+   put view_OldFolder() & shortFile into oldViewFile
+   if there is a stack oldViewFile then
+      put the short name of stack oldViewFile into oldName
+      delete stack oldName
+      --
+      go to stack oldViewFile
+   else
+      breakpoint
+      --
+      set the itemdelimiter to slash
+      put oldViewFile into oldViewFolder
+      put empty into item -1 of oldViewFolder
+      finder_RevealFileOrFolder oldViewFolder
+   end if
+end mDoubleUp_OldView
+
+function view_ListOldShortPaths
+   put view_OldFolder() into oldViewFolder
+   put files (oldViewFolder) into oldViewShortFiles
+   sort lines of oldViewShortFiles
+   return oldViewShortFiles
+end view_ListOldShortPaths
+
+function view_ListOldPaths
+   put view_OldFolder() into oldViewFolder
+   put file_ListLong (oldViewFolder) into oldViewFiles
+   return oldViewFiles
+end view_ListOldPaths
+
+function view_OldFolder
+   put the documents folder into oldViewFolder
+   put "/My Revolution Enterprise/Plugins/opn_Plugins/opn_Components/views/" after oldViewFolder
+   return oldViewFolder
+end view_OldFolder
+
+
+--> Display | Events
+-
+on mDouble_DisplayModuleFromStackName indexView, moduleStackName
+   display_ModuleFromStackName moduleStackName
+end mDouble_DisplayModuleFromStackName
+
+on mDouble_DisplayModuleFromShortFolder displayView, shortModuleFolder
+   if the array_View of displayView is not empty then
+      put _SelectedShortFolder (displayView) into shortModuleFolder
+   end if
+   display_ModuleFromShortModuleFolder shortModuleFolder
+end mDouble_DisplayModuleFromShortFolder
+
+on mDouble_EditProp displayView, hName
+   put the selected_Path of displayView into relPath
+   replace comma with "/" in relPath
+   --
+   put the displayed_ModuleFolder of displayView into moduleFolder
+   put moduleFolder & relPath into filePath
+   --
+   if there is a stack filePath then
+      set the itemdelimiter to "."
+      if item -1 of filePath = "livecode" then
+         go to stack filePath
+      else
+         edit the script of stack filePath
+      end if
+   else
+      put filePath
+   end if
+end mDouble_EditProp
+
+
 --> Working on
 -
 command display_ModuleArray pProjectNames
@@ -124,50 +209,6 @@ command module_CloseStackAndTools moduleStackName
    --
    return displayView
 end module_CloseStackAndTools
-
-
---> Display | Events
--
-on mDouble_DisplayModuleFromStackName indexView, moduleStackName
-   display_ModuleFromStackName moduleStackName
-end mDouble_DisplayModuleFromStackName
-
-on mDouble_DisplayModuleFromShortFolder displayView, shortModuleFolder
-   if the array_View of displayView is not empty then
-      put _SelectedShortFolder (displayView) into shortModuleFolder
-   end if
-   display_ModuleFromShortModuleFolder shortModuleFolder
-end mDouble_DisplayModuleFromShortFolder
-
-on mDouble_EditProp displayView, hName
-   put the selected_Path of displayView into relPath
-   replace comma with "/" in relPath
-   --
-   put the displayed_ModuleFolder of displayView into moduleFolder
-   put moduleFolder & relPath into filePath
-   --
-   if there is a stack filePath then
-      set the itemdelimiter to "."
-      if item -1 of filePath = "livecode" then
-         go to stack filePath
-      else
-         edit the script of stack filePath
-      end if
-   else
-      put filePath
-   end if
-end mDouble_EditProp
-
-private command _EditProperty displayView, hName
-   put the displayed_Object of indexView into viewObject
-   put the behavior of viewObject into viewBehavior
-   
-   -- put revRuggedID (hObject) into hObject
-   put "G" && hName into shortHkeyLine
-   put hKeyLine_AddObject (shortHkeyLine, viewBehavior) into hkeyLine
-   
-   hkey_Edit hkeyLine
-end _EditProperty
 
 
 --> Display | Module
