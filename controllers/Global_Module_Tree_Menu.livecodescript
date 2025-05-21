@@ -204,7 +204,7 @@ getprop disabled_UpdateModuleArray [viewObject]
    put the module_Name of viewObject into moduleStackName
    return moduleStackName is empty
 end disabled_UpdateModuleArray
-   
+
 getprop checked_SetCardDisplayedObject [viewObject]
    if exists (viewObject) is false then return false
    --
@@ -316,9 +316,9 @@ on menu_AddBrowser viewObject
 end menu_AddBrowser
 
 -- getprop disabled_AddBrowser [viewObject]
-   put the card_Object of viewObject into cObject
-   put the childControlIDs of cObject into cIDS
-   return cIDS is not empty
+put the card_Object of viewObject into cObject
+put the childControlIDs of cObject into cIDS
+return cIDS is not empty
 end disabled_AddBrowser
 
 on menu_SetModuleMenus sView
@@ -350,9 +350,19 @@ on menu_CreateModuleMenu viewObject
    put LocalArray ["displayView"] into displayView
    --
    ask_CreateModuleMenu moduleName, empty, empty, displayView
+   --
    put the result into mController
    edit the script of mController
 end menu_CreateModuleMenu
+
+on menu_CreateModuleBehavior viewObject
+   put LocalArray ["moduleName"] into moduleStackName
+   put LocalArray ["displayView"] into dView
+   --
+   ask_CreateModuleBehavior moduleStackName, dView
+   put the result into mObject
+   edit the script of mObject
+end menu_CreateModuleBehavior
 
 on menu_CloseModuleStack viewObject, moduleStackName
    replace ":" with "|" in moduleStackName
