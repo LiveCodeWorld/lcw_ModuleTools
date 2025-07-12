@@ -223,7 +223,6 @@ on menu_MakeFirstView tObject
    put _FirstControl (tObject) into firstControl
    put the stack_Name of firstControl into viewName
    --
-   breakpoint
    set the module_ViewMetaData [true] of firstControl to viewName
    display_ObjectProperties firstControl
    edit the script of firstControl
