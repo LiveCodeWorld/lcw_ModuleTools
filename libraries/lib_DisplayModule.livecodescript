@@ -137,7 +137,7 @@ on mDoubleUp_Replace displayView
    -- put shortModuleFolder into viewName
    -- replace "_" with "|" in viewName
    
-   put view_GetTemplateObject (viewName) into tObject
+   put default_FirstStackControl (viewName) into tObject
    if exists (tObject) then
       set the view_Replacement of dObject to tObject
       -- set the control_Type [viewPathFragment] of tObject to viewPathFragment
@@ -227,7 +227,7 @@ end display_ModuleFromShortModuleFolder
 command display_Module mName, pShowTools, pMakeVisible
    put pMakeVisible is not false into pMakeVisible
    view_NormalizeName mName
-   put view_GetTemplateObject (mName) into mObject
+   put default_FirstStackControl (mName) into mObject
    object_GoTo mObject, pMakeVisible
    
    if the shiftKey is "Down" or pShowTools is true then

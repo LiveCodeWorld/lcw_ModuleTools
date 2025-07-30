@@ -286,7 +286,7 @@ on menu_AddBrowser viewObject
    lcw_Answer "Add browser View to [[var]]", viewObject, oName
    
    # Create browser
-   put view_GetTemplateObject ("View|Browser") into browserView
+   put default_FirstStackControl ("View|Browser") into browserView
    copy browserView to cObject
    put it into copiedBrowser
    put the behavior of copiedBrowser into bObject
