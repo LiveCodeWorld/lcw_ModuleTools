@@ -346,9 +346,9 @@ end ___
 
 on menu_CreateModuleMenu viewObject
    put LocalArray ["moduleName"] into moduleName
-   put LocalArray ["displayView"] into displayView
+   put LocalArray ["displayView"] into dView
    --
-   ask_CreateModuleMenu moduleName, empty, empty, displayView
+   ask_CreateModuleMenu moduleName, empty, dView
    --
    put the result into mController
    edit the script of mController
