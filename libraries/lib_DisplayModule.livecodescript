@@ -65,13 +65,6 @@ on mDouble_DisplayModuleFromStackName indexView, moduleStackName
    display_ModuleFromStackName moduleStackName
 end mDouble_DisplayModuleFromStackName
 
-on mDouble_DisplayModuleFromShortFolder displayView, shortModuleFolder
-   if the array_View of displayView is not empty then
-      put _SelectedShortFolder (displayView) into shortModuleFolder
-   end if
-   display_ModuleFromShortModuleFolder shortModuleFolder
-end mDouble_DisplayModuleFromShortFolder
-
 on mDouble_EditProp displayView, hName
    put the selected_Path of displayView into relPath
    replace comma with "/" in relPath
@@ -288,4 +281,3 @@ function env_GetModuleShortFolderArray shortModuleFolder
    put moduleArray ["active"][shortModuleFolder] into shortFolderArray
    return shortFolderArray
 end env_GetModuleShortFolderArray
-

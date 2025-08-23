@@ -5,7 +5,7 @@ license: GPLv3
 name: Global | Module | Tree | Menu
 target: indexView
 type: controller
-version: 0.2
+version: 0.3
 
 
 --> Menu | Props
@@ -33,6 +33,11 @@ getprop menu_CheckTarget [viewObject]
    
    put the stack_Name of viewObject into moduleName
    put the module_Folder of viewObject into moduleFolder
+   
+   if there is not a folder moduleFolder then
+      return false
+   end if
+   
    put _GetClonedStackNames (viewObject) into clonedStackNames
    --
    put clonedStackNames into LocalArray ["clonedStackNames"]
@@ -245,17 +250,32 @@ on menu_CloneModule viewObject
       breakpoint
       lcw_AnswerWarning "No such stack!"
    end if
-   --
+   
+   module_Clone moduleName, true
+   /*
    stack_Clone moduleName
    put the result into clonedStack
    set the original_ModuleName of clonedStack to moduleName
    put the stack_Name of clonedStack into cStackName
    --
    display_CloneTools cStackName
+   */
 end menu_CloneModule
 
 private on _
 end _
+
+on menu_SetDefaultMenu sView
+   put the default_TitleMenu of sView into mTitle
+   put lcw_Ask ("Set the title_Menu...", mTitle) into mTitle
+   set the title_Menu of sView to mTitle 
+end menu_SetDefaultMenu
+
+getprop checked_SetDefaultMenu [sView]
+   put the default_TitleMenu of sView into dTitle
+   put the title_Menu of sView into mTitle
+   return dTitle = mTitle
+end checked_SetDefaultMenu
 
 on menu_InsertMenuGroup sView
    put the menubar_View of sView into mGroup

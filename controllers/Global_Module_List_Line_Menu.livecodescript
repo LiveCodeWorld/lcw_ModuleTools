@@ -5,7 +5,7 @@ copyright: David Bovill
 license: GPLv3
 name: Global | Module | List | Line | Menu
 type: controller
-version: 0.1
+version: 0.2
 
 /*Here you can describe this menu.
 Full help text should be provided on the linked wiki.*/
@@ -14,6 +14,17 @@ Full help text should be provided on the linked wiki.*/
 --> Variables
 -
 local LocalArray
+
+
+--> Events
+-
+on mDouble_DisplayModuleFromShortFolder displayView, shortModuleFolder
+   if the tree_View of displayView is not empty then
+      put _SelectedShortFolder (displayView) into shortModuleFolder
+   end if
+   display_ModuleFromShortModuleFolder shortModuleFolder
+end mDouble_DisplayModuleFromShortFolder
+
 
 --> Menu | Props
 -
